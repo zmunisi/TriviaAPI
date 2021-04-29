@@ -72,23 +72,291 @@ This README is missing documentation of your endpoints. Below is an example for 
 
 Endpoints
 GET '/categories'
-GET ...
-POST ...
-DELETE ...
+GET '/categories/<int:category_id>/questions'
+GET '/questions'
+POST '/questions'
+POST '/questions/search'
+DELETE '/questions/<int:question_id>'
+POST '/quizzes'
+
+
+## API
 
 GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Response example:
+```
+{
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "success": true
+}
+```
+
+- curl example:
+```curl http://localhost:5000/categories```
+
+GET '/categories/<int:category_id>/questions'
+- Fetches a dictionary of questions in a particular category 
+- Request Arguments: category_id (integer)
+- Returns: An object with the current category_id and a set of corresponding questions. 
+- Response example
+```
+{
+  "current_category": 1, 
+  "questions": [
+    {
+      "answer": "The Liver", 
+      "category": 1, 
+      "difficulty": 4, 
+      "id": 20, 
+      "question": "What is the heaviest organ in the human body?"
+    }, 
+    {
+      "answer": "Alexander Fleming", 
+      "category": 1, 
+      "difficulty": 3, 
+      "id": 21, 
+      "question": "Who discovered penicillin?"
+    }, 
+    {
+      "answer": "Blood", 
+      "category": 1, 
+      "difficulty": 4, 
+      "id": 22, 
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 3
+}
 
 ```
 
+- curl example:
+```curl http://localhost:5000/categories/<category_id>/questions```
+
+GET '/questions'
+GET '/questions?page=<page_number>'
+- Fetches a dictionary of paginated questions of all categories. 10 questions per page.
+- Optional Arguments: page (integer)
+- Returns: An object with a list of all categories, current category and a set of questions object.
+- Response example:
+```
+{
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "current_category": null, 
+  "questions": [
+    {
+      "answer": "Apollo 13", 
+      "category": 5, 
+      "difficulty": 4, 
+      "id": 2, 
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    }, 
+    {
+      "answer": "Tom Cruise", 
+      "category": 5, 
+      "difficulty": 4, 
+      "id": 4, 
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    }, 
+    {
+      "answer": "Maya Angelou", 
+      "category": 4, 
+      "difficulty": 2, 
+      "id": 5, 
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    }, 
+    {
+      "answer": "Edward Scissorhands", 
+      "category": 5, 
+      "difficulty": 3, 
+      "id": 6, 
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    }, 
+    {
+      "answer": "Muhammad Ali", 
+      "category": 4, 
+      "difficulty": 1, 
+      "id": 9, 
+      "question": "What boxer's original name is Cassius Clay?"
+    }, 
+    {
+      "answer": "Brazil", 
+      "category": 6, 
+      "difficulty": 3, 
+      "id": 10, 
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    }, 
+    {
+      "answer": "Uruguay", 
+      "category": 6, 
+      "difficulty": 4, 
+      "id": 11, 
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    }, 
+    {
+      "answer": "George Washington Carver", 
+      "category": 4, 
+      "difficulty": 2, 
+      "id": 12, 
+      "question": "Who invented Peanut Butter?"
+    }, 
+    {
+      "answer": "Lake Victoria", 
+      "category": 3, 
+      "difficulty": 2, 
+      "id": 13, 
+      "question": "What is the largest lake in Africa?"
+    }, 
+    {
+      "answer": "The Palace of Versailles", 
+      "category": 3, 
+      "difficulty": 3, 
+      "id": 14, 
+      "question": "In which royal palace would you find the Hall of Mirrors?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 20
+}
+```
+
+- curl examples:
+```curl http://localhost:5000/questions```
+
+```curl http://localhost:5000/questions?page=<page_id>```
+
+POST '/questions'
+- Creates a new question in a given category and question difficulty:
+- Required JSON header example:
+{
+    "question": "Who discovered penicillin?",
+    "answer": "Alexander Fleming",
+    "category": 1,
+    "difficulty": 4
+}
+- Returns: An object of successfuly created question state and its corresponding question_id
+- Response example:
+```
+{
+  "created": 75, 
+  "success": true
+}
+```
+
+- curl example:
+```
+curl -X POST -H "Content-Type: application/json" -d '{
+            "question": "Who discovered penicillin?",
+            "answer": "Alexander Fleming",
+            "category": 1,
+            "difficulty": 4
+        }'  http://localhost:5000/questions
+```
+
+POST '/questions/search'
+- Fetches all the questions that correspond the search term.
+- Request Arguments: searchTerm (string)
+- Returns: An object with all the questions that contain the search term in the question.
+- Response example:
+```
+{
+  "current_category": null, 
+  "questions": [
+    {
+      "answer": "Maya Angelou", 
+      "category": 4, 
+      "difficulty": 2, 
+      "id": 5, 
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    }, 
+    {
+      "answer": "Edward Scissorhands", 
+      "category": 5, 
+      "difficulty": 3, 
+      "id": 6, 
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 2
+```
+
+- curl example:
+```
+curl -X POST -H "Content-Type: application/json" -d '{
+            "searchTerm": "title"              
+        }'  http://localhost:5000/questions/search
+```
+
+DELETE '/questions/<int:question_id>'
+- Deletes the selected question by question_id
+- Request Arguments: question_id (integer)
+- Returns: An object with a success state and deleted question_id
+- Response example:
+```
+{
+  "deleted": 75, 
+  "success": true
+}
+```
+
+- curl example:
+```curl -X DELETE http://localhost:5000/questions/<question_id>```
+
+POST '/quizzes'
+- Fetches a random question from all categories or a particular category taking in consideration the previous question isn't available in the next request
+- Required JSON header example:
+```
+{
+    'previous_questions': [],
+    'quiz_category': {'type': 'Science', 'id': 1}
+}
+or
+{
+    'previous_questions': [<question_id>],
+    'quiz_category': {'type': 'Science', 'id': 1}
+}
+```
+- Returns: An question object with thhe corresponding answer, category, difficulty and question_id
+- Response example:
+```
+{
+  "question": {
+    "answer": "Blood", 
+    "category": 1, 
+    "difficulty": 4, 
+    "id": 22, 
+    "question": "Hematology is a branch of medicine involving the study of what?"
+  }, 
+  "success": true
+}
+
+```
+
+- curl example:
+```curl -X POST -H "Content-Type: application/json" -d '{
+    "previous_questions": [],
+    "quiz_category": {"type": "Science", "id": 1}
+}'  http://localhost:3000/quizzes
+```
 
 ## Testing
 To run the tests, run
@@ -96,5 +364,5 @@ To run the tests, run
 dropdb trivia_test
 createdb trivia_test
 psql trivia_test < trivia.psql
-python test_flaskr.py
+python test_flaskr.py or python3 test_flaskr.py
 ```
